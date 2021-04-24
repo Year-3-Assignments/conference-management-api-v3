@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
-import mongoose from 'mongoose';
 import pluginLoader from './lib/plugin.loader';
 import responseHandler from './lib/response.handler';
 
