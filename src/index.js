@@ -2,7 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 import pluginLoader from './lib/plugin.loader';
+import responseHandler from './lib/response.handler';
 
 dotenv.config();
 const app = express();
@@ -11,6 +13,17 @@ app.use(bodyParser.json());
 
 // Server port number
 const PORT = process.env.PORT || 9090;
+
+// Register respond handler
+app.use((req, res, next) => {
+  req.handleResponse = responseHandler;
+  next();
+});
+
+// Set root route of the API
+app.route('/').get((req, res) => {
+  res.send("WELCOME TO CONFERENCE API");
+});
 
 // Start the server
 app.listen(PORT, () => {

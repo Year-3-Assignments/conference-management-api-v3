@@ -28,7 +28,7 @@ export default function pluginLoader(app) {
       for (let plugin of registeredPlugins) {
         let pluginPath = path.normalize(path.dirname(__filename) + '/../plugins/' + plugin);
         
-        if (fs.existsSync(p)) {
+        if (fs.existsSync(pluginPath)) {
           moduleLoader(pluginPath, app, database);
         }
       }
