@@ -52,5 +52,5 @@ jobs:
       with:
         app-name: 'conference-management-api'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_a6d0c340e1e447c68ab991a126781683 }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_d9c0c50b300646bf94af1d3fb215a439 }}
         package: .
