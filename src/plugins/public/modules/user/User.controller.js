@@ -1,14 +1,12 @@
-import databaseUtil from '../../../../lib/database.config';
-let database = databaseUtil.getDatabase();
+const User = require('./User.model');
 
 export function createUser(req, res, next) {
-  try {
-    database.collection('users').insertOne(req.body)
-    .then((data) => {
-      res.status(200).send({ message: 'DATA INSERTED', data: data.ops[0] });
-    })
-  } catch (error) {
-    console.log(error.message)
-    res.status(500).send({ error: error.message });
+  let user = {
+    name: req.body.name,
+    university: req.body.university
   }
+  const newUser = new User(user)
+  newUser.save()
+    .then(req.handleResponse.sendRespond(res))
+    .catch(req.handleResponse.handleError(res));
 }
