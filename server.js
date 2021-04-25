@@ -11,7 +11,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Server port number
-const PORT = process.env.PORT || 9090;
+const serverPort = process.env.PORT || 9090;
 
 // Register respond handler
 app.use((req, res, next) => {
@@ -25,8 +25,8 @@ app.route('/').get((req, res) => {
 });
 
 // Start the server
-app.listen(PORT, () => {
-  console.log(`Server start running on PORT ${PORT}`);
+app.listen(serverPort, () => {
+  console.log(`Server start running on PORT ${serverPort}`);
 });
 
 /* Start the plugin loader
