@@ -4,8 +4,9 @@
   "description": "API for conference management system",
   "main": "app.js",
   "scripts": {
-    "start": "npm run build && node build/index.js",
-    "build": "babel src --out-dir build"
+    "start": "npm run build && npm run build-src && node build/server.js",
+    "build": "babel server.js --out-dir build",
+    "build-src": "babel src --out-dir build"
   },
   "author": "2021S1_REG_WE_14",
   "license": "ISC",
