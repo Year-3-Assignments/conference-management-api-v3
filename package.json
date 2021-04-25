@@ -4,7 +4,8 @@
   "description": "API for conference management system",
   "main": "app.js",
   "scripts": {
-    "start": "npm run build && node build/server.js",
+    "start": "node build/server.js",
+    "dev": "npm run build && node build/server.js",
     "build": "babel server.js src --out-dir build"
   },
   "author": "2021S1_REG_WE_14",
