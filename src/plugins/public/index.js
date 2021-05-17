@@ -1,8 +1,7 @@
 let plugin = {
   name: "public",
   modules: [
-    "user",
-    "workshop"
+    "user"
   ]
 };
 
