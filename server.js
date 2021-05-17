@@ -20,7 +20,7 @@ app.use((req, res, next) => {
 });
 
 // Set root route of the API
-app.route('/api').get((req, res) => {
+app.route('/').get((req, res) => {
   res.send("WELCOME TO CONFERENCE API BY <b>2021S1_REG_WE_14</b>");
 });
 
