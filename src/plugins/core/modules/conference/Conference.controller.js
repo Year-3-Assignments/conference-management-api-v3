@@ -24,53 +24,58 @@ export async function createConference(req, res, next) {
 
 export async function getConferencesForAdmin(req, res, next) {
   await Conference.find({})
-  .populate('createdby', '_id firstname, lastname email phonenumber imageurl')
-  .populate('atendees', '_id firstname, lastname email phonenumber imageurl')
-  .populate('resource', '_id resourceurls resourcepersons')
+  .populate('createdby', '_id firstname lastname email phonenumber imageurl')
+  .populate('atendees', '_id firstname lastname email phonenumber imageurl')
+  .populate({ path: 'resource', populate:{ path: 'resourcepersons', model: 'users', select: '_id firstname lastname email phonenumber imageurl'}})
   .then(data => {
     response.sendRespond(res, data);
-    next();
+    return;
   })
   .catch(error => {
-    response.handleError(res, data);
-    next();
+    response.handleError(res, error.message);
+    return;
   });
 }
 
 export async function getConferenceById(req, res, next) {
   if (req.params && req.params.id) {
     await Conference.findById(req.params.id)
-    .populate('createdby', '_id firstname, lastname email phonenumber imageurl')
-    .populate('atendees', '_id firstname, lastname email phonenumber imageurl')
-    .populate('resource', '_id resourceurls resourcepersons')
+    .populate('createdby', '_id firstname lastname email phonenumber imageurl')
+    .populate('atendees', '_id firstname lastname email phonenumber imageurl')
+    .populate({ path: 'resource', populate:{ path: 'resourcepersons', model: 'users', select: '_id firstname lastname email phonenumber imageurl'}})
     .then(data => {
       response.sendRespond(res, data);
-      next();
+      return;
     })
     .catch(error => {
-      response.handleError(res, data);
-      next();
+      response.handleError(res, error.message);
+      return;
     });
   }
 }
 
 export async function getConferences(req, res, next) {
-  await Conference.findById(req.params.id)
-  .populate('createdby', '_id firstname, lastname email phonenumber imageurl')
-  .populate('resource', '_id resourceurls resourcepersons')
+  await Conference.find({})
+  .populate('createdby', '_id firstname lastname email phonenumber imageurl')
+  .populate({ path: 'resource', populate:{ path: 'resourcepersons', model: 'users', select: '_id firstname lastname email phonenumber imageurl'}})
   .then(data => {
     response.sendRespond(res, data);
-    next();
+    return;
   })
   .catch(error => {
-    response.handleError(res, data);
-    next();
+    response.handleError(res, error.message);
+    return;
   });
 }
 
 export async function updateConference(req, res, next) {
   if (req.user && req.body) {
     if (_.isEqual(req.user.role, 'ROLE_EDITOR')) {
+      let conference = await Conference.findById(req.body._id);
+      if (!conference) {
+        response.handleError(res, 'Resource not found');
+        return;
+      }
       let updateConferenceData = {
         name: req.body.name,
         venue: req.body.venue,
@@ -82,15 +87,15 @@ export async function updateConference(req, res, next) {
       await Conference.findByIdAndUpdate(req.body._id, updateConferenceData)
       .then(data => {
         response.sendRespond(res, data);
-        next();
+        return;
       })
       .catch(error => {
         response.handleError(res, error.message);
-        next();
+        return;
       });
     } else {
       response.handleError(res, 'Only Editor can update the conference details');
-      next();
+      return;
     }
   }
 }
@@ -101,15 +106,15 @@ export async function deleteConference(req, res, next) {
       await Conference.findByIdAndDelete(req.params.id)
       .then(data => {
         response.sendRespond(res, data);
-        next();
+        return;
       })
       .catch(error => {
         response.handleError(res, error.message);
-        next();
+        return;
       });
     } else {
-      response.handleError(res, 'Only Editor can update the conference details');
-      next();
+      response.handleError(res, 'Only Editor can delete the conference details');
+      return;
     }
   }
 }
@@ -117,6 +122,11 @@ export async function deleteConference(req, res, next) {
 export async function updateConferenceStatus(req, res, next) {
   if (req.user && req.body) {
     if (_.isEqual(req.user.role, 'ROLE_ADMIN')) {
+      let conference = await Conference.findById(req.body._id);
+      if (!conference) {
+        response.handleError(res, 'Resource not found');
+        return;
+      }
       let statusData = {
         status: req.body.status
       };
@@ -124,15 +134,15 @@ export async function updateConferenceStatus(req, res, next) {
       await Conference.findByIdAndUpdate(req.body._id, statusData)
       .then(data => {
         response.sendRespond(res, data);
-        next();
+        return;
       })
       .catch(error => {
         response.handleError(res, error.message);
-        next();
+        return;
       });
     } else {
       response.handleError(res, 'Only Admin can change the status');
-      next();
+      return;
     }
   }
 }

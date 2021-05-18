@@ -8,8 +8,8 @@ module.exports = function (app, db) {
   router.get('/', controller.getConferences);
   router.get('/admin/', controller.getConferencesForAdmin);
   router.get('/:id', controller.getConferenceById);
-  router.put('/update/:id', auth, controller.updateConference);
-  router.put('/updatestatus/:id', auth, controller.updateConferenceStatus);
+  router.put('/update', auth, controller.updateConference);
+  router.put('/updatestatus', auth, controller.updateConferenceStatus);
   router.delete('/delete/:id', auth, controller.deleteConference);
 
   return { router: router };
