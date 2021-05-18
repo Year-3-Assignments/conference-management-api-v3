@@ -6,6 +6,7 @@ const auth = require('../../../auth/auth');
 module.exports = function (app, db) {
   router.post('/create', auth, controller.createConference);
   router.get('/', controller.getConferences);
+  router.get('/admin/', controller.getConferencesForAdmin);
   router.get('/:id', controller.getConferenceById);
   router.put('/update/:id', auth, controller.updateConference);
   router.put('/updatestatus/:id', auth, controller.updateConferenceStatus);
