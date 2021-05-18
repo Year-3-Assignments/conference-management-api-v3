@@ -1,6 +1,8 @@
 let plugin = {
   name: "core",
-  modules: [ 
+  modules: [
+    "workshop",
+    "resource",
     "keynote"
   ]
 };

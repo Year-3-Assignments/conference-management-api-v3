@@ -1,15 +1,13 @@
 export default {
-  sendRespond: function(res, status = 200) {
-    return function(data) {
-      if (data == null) {
-        return res.status(404).send({ status: 404, message: 'Data Not Found!' });
-      } else {
-        return res.status(status).send({ data: data });
-      }
+  sendRespond: function(res, data, status = 200) {
+    if (data == null) {
+      return res.status(404).send({ status: 404, message: 'Data Not Found!' });
+    } else {
+      return res.status(status).send({ data: data });
     }
   },
 
-  checkDataNotFound: function(res) {
+  sendNotFound: function(res) {
     return function(data) {
       if (data == null) {
         return res.status(404).send({ status: 404, message: 'Data Not Found!' });
@@ -19,11 +17,9 @@ export default {
     }
   },
 
-  handleError: function(res) {
-    return function(error) {
-      if (error) {
-        return res.status(400).send({ status: 400, message: error.message });
-      }
+  handleError: function(res, error) {
+    if (error) {
+      return res.status(400).send({ status: 400, messages: error });
     }
   }
 }
