@@ -10,6 +10,8 @@ const ConferenceSchema = new Schema({
   createdby: { type: Schema.Types.ObjectId, required: true, ref: 'users' },
   atendees: [{ type: Schema.Types.ObjectId, ref: 'users' }],
   resource: { type: Schema.Types.ObjectId, ref: 'resources'},
+}, {
+  timestamps: true
 });
 
 const Conference = mongoose.model('conferences', ConferenceSchema);
