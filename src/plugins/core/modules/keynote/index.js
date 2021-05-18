@@ -6,8 +6,9 @@ let router = express.Router();
 
 module.exports = function (app, db) {
     router.post('/create', controller.createKeynote);
-
-    //router.get('/adtendees', auth, controller.getAtendeeAccounts);
-
+    router.put('/update', controller.updateKeynote);
+    router.get('/', controller.getAllKeynotes);
+    router.get('/:id', controller.getKeynoteById);
+    router.delete('/delete', controller.deleteKeynote);
   return { router: router };
 }

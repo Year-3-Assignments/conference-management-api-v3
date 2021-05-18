@@ -16,6 +16,7 @@ export async function createKeynote (req, res, next){
     });
   }
 }
+
 //get all keynote details
 export async function getAllKeynotes(req, res, next) {
   await Keynote.find({})
@@ -54,6 +55,18 @@ export async function updateKeynote(req, res, next) {
     next();
   } else {
     response.handleError(res, 'Please provide necessary fields');
+  }
+}
+
+// delete keynote - core
+export async function deleteKeynote(req, res, next) {
+  if (req.params && req.params.id) {
+    const keynote = await Keynote.findIdAndDelete(req.keynote.id);
+    response.sendRespond(res, keynote);
+    next();
+  } else {
+    response.handleError(req, 'Parameter id is required');
+    next();
   }
 }
 
