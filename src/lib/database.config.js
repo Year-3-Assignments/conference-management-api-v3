@@ -5,7 +5,7 @@ let database;
 
 module.exports = {
   connectToDatabseServer: function(callback) {
-    mongoose.connect(URI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }, (error, db) => {
+    mongoose.connect(URI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true }, (error, db) => {
       database = db
       return callback(error);
     });
