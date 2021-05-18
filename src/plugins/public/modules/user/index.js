@@ -16,7 +16,5 @@ module.exports = function (app, db) {
   router.get('/reseachers', auth, controller.getResearcherAccounts);
   router.get('/adtendees', auth, controller.getAtendeeAccounts);
 
-  return {
-    router: router
-  }
+  return { router: router };
 }

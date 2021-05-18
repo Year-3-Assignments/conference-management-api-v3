@@ -1,7 +1,7 @@
 let plugin = {
   name: "core",
   modules: [
-    "coreService"
+    "resource"
   ]
 };
 
