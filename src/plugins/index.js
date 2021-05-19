@@ -1,5 +1,3 @@
 export default [
-  "core",
-  "public",
-  "admin"
+  "api"
 ]
