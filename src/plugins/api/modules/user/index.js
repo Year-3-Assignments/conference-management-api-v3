@@ -7,6 +7,8 @@ module.exports = function (app, db) {
   router.post('/create', controller.createUser);
   router.post('/login', controller.userLogin);
   router.get('/', auth, controller.getUserAccount);
+  router.get('/notifications', auth, controller.getUserNotifications);
+  router.put('/makearchive/:id', auth, controller.makeArchive);
   router.put('/update', auth, controller.updateUserAccount);
   router.delete('/delete', auth, controller.deleteUserAccount);
   router.get('/admins', auth, controller.getAdminAccounts);

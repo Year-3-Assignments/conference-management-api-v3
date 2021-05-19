@@ -1,4 +1,5 @@
 import User from './User.model';
+import Notification from './Notification.model';
 import response from '../../../../lib/response.handler';
 import bcrypt from 'bcryptjs';
 import _ from 'lodash';
@@ -92,6 +93,46 @@ export function getUserAccount(req, res, next) {
     next();
   } else {
     response.sendNotFound(res);
+  }
+}
+
+// get notifications for user
+export async function getUserNotifications(req, res, next) {
+  if (req.user) {
+    await Notification.find({ to: req.user._id }).sort({ createdAt: 'desc' }).limit(1)
+    .then(data => {
+      response.sendRespond(res, data);
+      return;
+    })
+    .catch(error => {
+      response.handleError(res, error.message);
+      return;
+    })
+  }
+}
+
+export async function makeArchive(req, res, next) {
+  if (req.user && req.params.id) {
+    let notification = await Notification.findById(req.params.id);
+    if (!notification) {
+      response.handleError(res, 'No notifications');
+      return;
+    }
+
+    if (_.isEqual(req.user._id, notification.to)) {
+      await Notification.findByIdAndUpdate(req.params.id, { isarchive: true })
+      .then(data => {
+        response.sendRespond(res, data);
+        return;
+      })
+      .catch(error => {
+        response.handleError(res, error.message);
+        return;
+      })
+    } else {
+      response.handleError(res, 'This notification not belongs to you');
+      return;
+    }
   }
 }
 
