@@ -3,7 +3,7 @@ import response from '../../lib/response.handler';
 
 module.exports = async function auth(req, res, next) {
   try {
-    const User = require('../public/modules/user/User.model');
+    const User = require('../api/modules/user/User.model');
     const token = req.header('Authorization');
     const decode = jwt.verify(token, 'conferenceSecret');
     const user = await User.findOne({ _id: decode._id, 'token': token });
