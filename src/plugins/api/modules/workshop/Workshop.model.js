@@ -9,8 +9,10 @@ const WorkshopSchema = new Schema({
   imageurl: { type: String, required: false, trim: true },
   users:[{ type: Schema.Types.ObjectId, required: true, ref: 'users' }],
   attendees:[{ type: Schema.Types.ObjectId, required: true, ref: 'users' }],
-}, {strict: false},
-{ timesamps: true});
+}, 
+  { strict: false },
+  { timesamps: true}
+);
 const Workshop = mongoose.model('workshops', WorkshopSchema);
 
 module.exports = Workshop;

@@ -82,7 +82,10 @@ export async function changeResourceStatus(req, res, next) {
       response.handleError(res, 'Resource not found');
       return;
     }
-    
+    if (_.isEqual(req.body.status, 'APPROVED')) {
+      // send a notification to relevent user
+      // mark resource as approved
+    }
     await Resource.findByIdAndUpdate(req.params.id, { status: req.body.status })
     .then(data => {
       response.sendRespond(res, data);
