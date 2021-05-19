@@ -3,7 +3,8 @@ let plugin = {
   modules: [
     "workshop",
     "resource",
-    "keynote"
+    "keynote",
+    "user"
   ]
 };
 
