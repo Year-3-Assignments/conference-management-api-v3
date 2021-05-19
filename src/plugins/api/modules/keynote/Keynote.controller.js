@@ -38,7 +38,7 @@ export async function getAllKeynotes(req, res, next) {
 }
 
 //get keynote details - core
-export function getKeynoteById(req, res, next) {
+export async function getKeynoteById(req, res, next) {
   if (req.params && req.params.id) {
     await Keynote.findById(req.params.id)
     .populate({ path: 'resource', populate: { path: 'resourcepersons', model: 'users', select: 'firstname lastname email phonenumber description imageurl'}})
