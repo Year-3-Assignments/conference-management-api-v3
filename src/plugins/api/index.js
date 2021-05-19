@@ -1,8 +1,10 @@
 let plugin = {
-  name: "core",
+  name: "api",
   modules: [
     "workshop",
-    "resource"
+    "resource",
+    "user",
+    "conference"
   ]
 };
 
