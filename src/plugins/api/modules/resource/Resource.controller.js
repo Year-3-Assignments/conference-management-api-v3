@@ -48,6 +48,20 @@ export async function getResourceById(req, res, next) {
   }
 }
 
+export async function getResourcesForEditor(req, res, next) {
+  await Resource.find({ ispaid: true })
+  .populate('createdby', '_id firstname lastname email username phonenumber imageurl description')
+  .populate('resourcepersons', '_id firstname lastname email username phonenumber imageurl description')
+  .then((data) => {
+    response.sendRespond(res, data);
+    next();
+  })
+  .catch(error => {
+    response.handleError(res, error.message);
+    next();
+  });
+}
+
 export async function updateResource(req, res, next) {
   if (req.body) {
     let resource = await Resource.findById(req.body._id);
@@ -136,7 +150,6 @@ export async function changeResourceStatus(req, res, next) {
 
 export async function deleteResource(req, res, next) {
   if (req.params && req.params.id) {
-    console.log(req.user.role)
     if (_.isEqual(req.user.role, 'ROLE_PRESENTER') || _.isEqual(req.user.role, 'ROLE_RESEARCHER')) {
       let resource = await Resource.findById(req.params.id);
       if (!resource) {
@@ -157,5 +170,28 @@ export async function deleteResource(req, res, next) {
       response.handleError(res, 'Only presenter and researcher can delete their resources');
       return;
     }
+  }
+}
+
+export async function makeResourcePaid(req, res, next) {
+  if (req.params && req.params.id) {
+    let resource = await Resource.findById(req.params.id);
+    if (!resource) {
+      response.handleError(res, 'Resource not found');
+      return;
+    }
+
+    await Resource.findByIdAndUpdate(req.params.id, { ispaid: true })
+    .then(data => {
+      response.sendRespond(res, data);
+      next();
+    })
+    .catch(error => {
+      response.handleError(res, error.message);
+      next();
+    });
+  } else {
+    response.handleError(res, 'Please provide necessary fields');
+    return;
   }
 }
