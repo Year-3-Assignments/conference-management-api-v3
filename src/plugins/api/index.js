@@ -4,7 +4,8 @@ let plugin = {
     "workshop",
     "resource",
     "keynote",
-    "user"
+    "user",
+    "conference"
   ]
 };
 
