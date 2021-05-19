@@ -5,7 +5,8 @@ let plugin = {
     "resource",
     "keynote",
     "user",
-    "conference"
+    "conference",
+    "payment"
   ]
 };
 
