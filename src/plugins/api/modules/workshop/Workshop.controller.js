@@ -1,6 +1,8 @@
 const Workshop = require('./Workshop.model');
 import response from '../../../../lib/response.handler';
 import _ from 'lodash';
+import User from '../user/User.model.js'
+import Notification from '../user/Notification.model'
 
 export async function createWorkshop(req, res, next) {
   if (req.body) {
@@ -90,5 +92,72 @@ export async function getWorkshopById(req, res, next) {
       response.handleError(res, error.message);
       next();
     });
+  }
+}
+
+export async function addAttendee(req, res, next) {
+
+  if (req.user && req.body) {
+      let workshop = await Workshop.findById(req.body._id);
+      if (!workshop) {
+        response.handleError(res, 'Workshop not found');
+        return;
+      }
+
+      // Add details to Workshop      
+
+      await Workshop.findByIdAndUpdate(req.body._id, { $push: {attendees: req.user._id}})
+      .then(data => {
+        return;
+      })
+      .catch(error => {
+        return;
+      });
+        
+        
+      // Add details to User Collection
+      await User.findByIdAndUpdate({ _id: req.user._id }, { $push: {attending_workshops: req.body._id}})
+      .then(data => {
+        return;
+      })
+      .catch(error => {
+        return;
+      });
+      
+      // Add details to Notification Collection
+
+      let notification_name = ""
+
+      await Workshop.findById(req.body._id)
+      .then(data => {
+        notification_name = data.name;
+        console.log(notification_name)
+        next();
+      })
+      .catch(error => {
+        next();
+      });
+  
+      let notificationDetail ={
+        workshop: req.body._id,
+        message: `Your can now attend the Workshop `+ notification_name,
+        to: req.user._id,
+        isarchive: false
+      }
+  
+      console.log(notificationDetail);
+
+      let notification = new Notification(notificationDetail);
+      await notification.save()
+      .then(() => {
+        response.sendRespond(res, data);
+        return;
+      })
+      .catch(error => {
+        next();
+      });
+
+      return;
+
   }
 }
