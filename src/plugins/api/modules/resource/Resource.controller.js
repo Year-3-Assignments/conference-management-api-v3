@@ -108,7 +108,7 @@ export async function changeResourceStatus(req, res, next) {
         let notificationData = {
           resource: resource._id,
           from: req.user._id,
-          message: `Your resources are approved by ${req.user.firstname}`,
+          message: req.body.message,
           to: resource.createdby,
           isarchive: false
         }
@@ -124,7 +124,7 @@ export async function changeResourceStatus(req, res, next) {
         let notificationData = {
           resource: resource._id,
           from: req.user._id,
-          message: `Your resources are rejected by ${req.user.firstname}`,
+          message: req.body.message,
           to: resource.createdby,
           isarchive: false
         }
