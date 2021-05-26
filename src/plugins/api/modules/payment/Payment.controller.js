@@ -8,11 +8,11 @@ import Payment from '../payment/Payment.model'
 export async function chargeAmount(req, res, next) {
   if (req.user && req.body) {
     
-    // let { status } = await stripe.charges.create({
-    //     amount: req.body.amount,
-    //     currency: 'LKR',
-    //     source: req.body.token
-    //   })
+    let { status } = await stripe.charges.create({
+        amount: req.body.amount,
+        currency: 'LKR',
+        source: req.body.token
+      })
 
       // Add Payment Details to Payment Collection
       let paymentDetail ={
