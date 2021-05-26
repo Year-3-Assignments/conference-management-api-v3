@@ -11,7 +11,11 @@ const UserSchema = new Schema({
   phonenumber: { type: String, required: [true, 'Phone must be provided'], trim: true },
   imageurl: { type: String, required: false, trim: true },
   description: { type: String, required: false, trim: true },
-  role: { type: String, required: [true, 'Role must be provided'], trim: true },
+  role: { type: String, required: false, trim: true },
+  conferences: [{ type: Schema.Types.ObjectId, required: false, ref: 'conferences' }],
+  workshops:  [{ type: Schema.Types.ObjectId, required: false, ref: 'workshops' }],
+  attending_conferences:  [{ type: Schema.Types.ObjectId, required: false, ref: 'conferences' }],
+  attending_workshops: [{ type: Schema.Types.ObjectId, required: false, ref: 'workshops' }],
   token: { type: String }
 }, {
   strict: false,

@@ -4,7 +4,7 @@ let auth = require('../../../auth/auth');
 const router = express.Router();
 
 module.exports = function (app, db) {
-  router.post('/charge', auth, controller.changeAmount);
+  router.post('/charge', auth, controller.chargeAmount);
 
   return { router: router };
 }
