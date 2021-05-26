@@ -8,11 +8,11 @@ import Payment from '../payment/Payment.model'
 export async function chargeAmount(req, res, next) {
   if (req.user && req.body) {
     
-    let { status } = await stripe.charges.create({
-        amount: req.body.amount,
-        currency: 'LKR',
-        source: req.body.token
-      })
+    // let { status } = await stripe.charges.create({
+    //     amount: req.body.amount,
+    //     currency: 'LKR',
+    //     source: req.body.token
+    //   })
 
       // Add Payment Details to Payment Collection
       let paymentDetail ={
@@ -47,11 +47,11 @@ export async function chargeAmount(req, res, next) {
         await User.findByIdAndUpdate({ _id: req.user._id }, { $push: { attending_conferences: req.body.conference_id }})
       })
       .then(() => {
-        res.status(200).send({message: 'Conference Added Successfully.'});
+        res.status(200).send({message: 'Conference Added Successfully: ' + req.body.conference_id });
         return;
       })
       .catch(error => {
-        res.status(200).send({message: 'Error Occured'});
+        res.status(400).send({message: 'Error Occured: ' + req.body.conference_id });
         return;
       });
   }
