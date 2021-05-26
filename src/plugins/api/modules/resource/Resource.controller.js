@@ -32,6 +32,25 @@ export async function getAllResouces(req, res, next) {
   });
 }
 
+export async function getUserResorces(req, res, next) {
+  if (req.user) {
+    await Resource.find({ createdby: req.user._id })
+    .populate('createdby', '_id firstname lastname email username phonenumber imageurl description')
+    .populate('resourcepersons', '_id firstname lastname email username phonenumber imageurl description')
+    .then((data) => {
+      response.sendRespond(res, data);
+      return;
+    })
+    .catch(error => {
+      response.handleError(res, error.message);
+      return;
+    });
+  } else {
+    response.handleError(res, 'Only authenticated user can access this route');
+    return;
+  }
+}
+
 export async function getResourceById(req, res, next) {
   if (req.params && req.params.id) {
     await Resource.findById(req.params.id)
