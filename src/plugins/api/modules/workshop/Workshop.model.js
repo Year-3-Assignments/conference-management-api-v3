@@ -8,7 +8,7 @@ const WorkshopSchema = new Schema({
   place: { type: String,required: [true, 'Workshop venue'],trim: true },
   imageurl: { type: String, required: false, trim: true },
   users:[{ type: Schema.Types.ObjectId, required: true, ref: 'users' }],
-  attendees:[{ type: Schema.Types.ObjectId, required: true, ref: 'users' }],
+  attendees:[{ type: Schema.Types.ObjectId, required: false, ref: 'users' }],
 }, 
   { strict: false },
   { timesamps: true}

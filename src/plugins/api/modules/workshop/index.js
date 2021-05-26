@@ -8,6 +8,7 @@ module.exports = function (app, db) {
   router.get('/', controller.getAllWorkshops);
   router.get('/:id', controller.getWorkshopById);
   router.put('/update',auth, controller.updateWorkshop);
+  router.put('/addattendee', auth, controller.addAttendee);
   router.delete('/remove/:id', auth, controller.deleteWorkshop);
 
   return { router: router }

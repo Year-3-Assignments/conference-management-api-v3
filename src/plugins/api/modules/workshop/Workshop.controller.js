@@ -1,6 +1,8 @@
 const Workshop = require('./Workshop.model');
 import response from '../../../../lib/response.handler';
 import _ from 'lodash';
+import User from '../user/User.model.js'
+import Notification from '../user/Notification.model'
 
 export async function createWorkshop(req, res, next) {
   if (req.body) {
@@ -90,5 +92,48 @@ export async function getWorkshopById(req, res, next) {
       response.handleError(res, error.message);
       next();
     });
+  }
+}
+
+export async function addAttendee(req, res, next) {
+
+  if (req.user && req.body) {
+
+      let workshop = await Workshop.findById(req.body._id);
+
+      if (!workshop) {
+        response.handleError(res, 'Workshop not found');
+        return;
+      }
+
+      let notification_name = ""
+
+      // Add details to Workshop      
+      await Workshop.findByIdAndUpdate(req.body._id, { $push: {attendees: req.user._id}})
+      .then( async () => {
+        // Add details to User Collection
+        await User.findByIdAndUpdate({ _id: req.user._id }, { $push: {attending_workshops: req.body._id}})
+      }).then(async () => {
+        let data = await Workshop.findById(req.body._id)
+        notification_name = data.name;
+      }).then(async () => {
+          // Add details to Notification Collection
+          let notificationDetail = {
+            workshop: req.body._id,
+            message: req.body.message + " " + notification_name,
+            to: req.user._id,
+            isarchive: false
+          }
+          let notification = new Notification(notificationDetail);
+          await notification.save()
+      }).then(() => {
+        res.status(200).send({message: 'Conference Added Successfully.'});
+
+      })
+      .catch(error => {
+        res.status(400).send({message: 'Error Occured.'});
+      });
+
+      return;
   }
 }
