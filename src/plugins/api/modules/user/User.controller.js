@@ -177,13 +177,11 @@ export async function getEditorAccounts(req,res, next) {
 
 // get all user accounts | private | admin only
 export async function getAllUserAccounts(req, res, next) {
-  if (_.isEqual(req.user.role, 'ROLE_ADMIN')) {
-    const researcherAccounts = await User.find({ role: 'ROLE_USER' });
-    if (researcherAccounts) {
-      response.sendRespond(res, researcherAccounts);
-      next();
-    } else {
-      response.sendNotFound(res);
-    }
+  const researcherAccounts = await User.find({ role: 'ROLE_USER' });
+  if (researcherAccounts) {
+    response.sendRespond(res, researcherAccounts);
+    next();
+  } else {
+    response.sendNotFound(res);
   }
 }
