@@ -19,6 +19,12 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 // Set root route of the API
 app.route('/').get((req, res) => {
   res.send("WELCOME TO CONFERENCE API BY <b>2021S1_REG_WE_14</b>");
