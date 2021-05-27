@@ -175,41 +175,13 @@ export async function getEditorAccounts(req,res, next) {
   }
 }
 
-// get all researcher accounts | private | admin only
-export async function getResearcherAccounts(req, res, next) {
-  if (_.isEqual(req.user.role, 'ROLE_ADMIN')) {
-    const researcherAccounts = await User.find({ role: 'ROLE_RESEARCHER' });
-    if (researcherAccounts) {
-      response.sendRespond(res, researcherAccounts);
-      next();
-    } else {
-      response.sendNotFound(res);
-    }
-  }
-}
-
-// get all presenter accounts | private | admin only
-export async function getPresenterAccounts(req, res, next) {
-  if (_.isEqual(req.user.role, 'ROLE_ADMIN')) {
-    const presenterAccounts = await User.find({ role: 'ROLE_PRESENTER' });
-    if (presenterAccounts) {
-      response.sendRespond(res, presenterAccounts);
-      next();
-    } else {
-      response.sendNotFound(res);
-    }
-  }
-}
-
-// get all atendee accounts | private | admin only
-export async function getAtendeeAccounts(req, res, next) {
-  if (_.isEqual(req.user.role, 'ROLE_ADMIN')) {
-    const atendeeAccounts = await User.find({ role: 'ROLE_ATENDEE' });
-    if (atendeeAccounts) {
-      response.sendRespond(res, atendeeAccounts);
-      next();
-    } else {
-      response.sendNotFound(res);
-    }
+// get all user accounts | private | admin only
+export async function getAllUserAccounts(req, res, next) {
+  const researcherAccounts = await User.find({ role: 'ROLE_USER' });
+  if (researcherAccounts) {
+    response.sendRespond(res, researcherAccounts);
+    next();
+  } else {
+    response.sendNotFound(res);
   }
 }

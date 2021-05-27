@@ -14,9 +14,7 @@ module.exports = function (app, db) {
   router.get('/admins', auth, controller.getAdminAccounts);
   router.get('/reviewers', auth, controller.getReviewerAccounts);
   router.get('/editors', auth, controller.getEditorAccounts);
-  router.get('/presenters', auth, controller.getPresenterAccounts);
-  router.get('/reseachers', auth, controller.getResearcherAccounts);
-  router.get('/adtendees', auth, controller.getAtendeeAccounts);
+  router.get('/users', controller.getAllUserAccounts);
 
   return { router: router };
 }

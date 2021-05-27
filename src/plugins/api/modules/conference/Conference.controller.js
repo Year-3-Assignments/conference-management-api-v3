@@ -23,18 +23,23 @@ export async function createConference(req, res, next) {
 }
 
 export async function getConferencesForAdmin(req, res, next) {
-  await Conference.find({})
-  .populate('createdby', '_id firstname lastname email phonenumber imageurl')
-  .populate('atendees', '_id firstname lastname email phonenumber imageurl')
-  .populate({ path: 'resource', populate:{ path: 'resourcepersons', model: 'users', select: '_id firstname lastname email phonenumber imageurl'}})
-  .then(data => {
-    response.sendRespond(res, data);
+  if (req.user && req.user.role === 'ROLE_ADMIN') {
+    await Conference.find({})
+    .populate('createdby', '_id firstname lastname email phonenumber imageurl')
+    .populate('atendees', '_id firstname lastname email phonenumber imageurl')
+    .populate({ path: 'resource', populate:{ path: 'resourcepersons', model: 'users', select: '_id firstname lastname email phonenumber imageurl'}})
+    .then(data => {
+      response.sendRespond(res, data);
+      return;
+    })
+    .catch(error => {
+      response.handleError(res, error.message);
+      return;
+    });
+  } else {
+    response.handleError(res, 'Only admin can get these data');
     return;
-  })
-  .catch(error => {
-    response.handleError(res, error.message);
-    return;
-  });
+  }
 }
 
 export async function getConferenceById(req, res, next) {
