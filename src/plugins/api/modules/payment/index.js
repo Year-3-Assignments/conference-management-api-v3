@@ -5,6 +5,7 @@ const router = express.Router();
 
 module.exports = function (app, db) {
   router.post('/charge', auth, controller.chargeAmount);
+  router.post('/chargeResource', auth, controller.chargeResourceAmount);
 
   return { router: router };
 }
