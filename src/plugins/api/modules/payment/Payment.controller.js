@@ -3,6 +3,7 @@ import Notification from '../user/Notification.model'
 import User from '../user/User.model.js'
 import Conference from '../conference/Conference.model'
 import Payment from '../payment/Payment.model'
+import Resource from '../resource/Resource.model'
 
 export async function chargeAmount(req, res, next) {
   if (req.user && req.body) {
@@ -53,6 +54,44 @@ export async function chargeAmount(req, res, next) {
     })
     .then(() => {
       res.status(200).send({message: 'Conference Added Successfully: ' + req.body.conference_id });
+      return;
+    })
+    .catch(error => {
+      res.status(400).send({message: 'Error Occured: ' + error.message });
+      return;
+    });
+  }
+}
+
+export async function chargeResourceAmount(req, res, next) {
+  if (req.user && req.body) {
+    // let { status } = await stripe.charges.create({
+    //   amount: req.body.amount,
+    //   currency: 'LKR',
+    //   source: req.body.token
+    // });
+
+    // Add Payment Details to Payment Collection
+    let paymentDetail ={
+      conference: req.body.conference_id,
+      attendee: req.user._id,
+      amount: req.body.amount,
+      source: req.body.token
+    }
+
+    let conference_resource = null;
+    let payment = new Payment(paymentDetail);
+    await payment.save()
+    .then(async () => {
+      let data = await Conference.findById(req.body.conference_id);
+      conference_resource = data.resource;
+      console.log(conference_resource);
+    })
+    .then(async() => {
+      await Resource.findByIdAndUpdate(conference_resource, {ispaid: 'true'});
+    })
+    .then(() => {
+      res.status(200).send({message: 'Payment Added Successfully: ' + req.body.conference_id });
       return;
     })
     .catch(error => {

@@ -6,7 +6,7 @@ const ConferenceSchema = new Schema({
   startdate: { type: Date, required: true, trim: true },
   enddate: { type: Date, required: true, trim: true },
   description: { type: String, required: true, trim: true },
-  amount: { type: String, required: false, trim: true },
+  amount: { type: Number, required: false, trim: true },
   status: { type: String, required: true, trim: true },
   createdby: { type: Schema.Types.ObjectId, required: true, ref: 'users' },
   atendees: [{ type: Schema.Types.ObjectId, ref: 'users' }],
