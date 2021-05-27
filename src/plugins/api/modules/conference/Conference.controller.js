@@ -81,6 +81,7 @@ export async function updateConference(req, res, next) {
         venue: req.body.venue,
         startdate: req.body.startdate,
         enddate: req.body.enddate,
+        amount: req.body.amount,
         description: req.body.description
       };
 

@@ -75,6 +75,7 @@ export async function updateResource(req, res, next) {
       time: req.body.time,
       description: req.body.description,
       resourceurls: req.body.resourceurls,
+      amount: req.body.amount,
       resourcepersons: req.body.resourcepersons
     };
     
