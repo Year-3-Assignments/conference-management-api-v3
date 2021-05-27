@@ -9,7 +9,7 @@ module.exports = function (app, db) {
   router.get('/resource', auth, controller.getUserResorces);
   router.get('/:id', controller.getResourceById);
   router.put('/update', auth, controller.updateResource);
-  router.post('/status/:id', auth, controller.changeResourceStatus);
+  router.put('/status/:id', auth, controller.changeResourceStatus);
   router.delete('/remove/:id', auth, controller.deleteResource);
   router.put('/paid/:id', auth, controller.makeResourcePaid);
   router.get('/editor/resources', auth, controller.getResourcesForEditor);
