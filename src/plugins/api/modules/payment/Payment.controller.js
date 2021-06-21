@@ -4,6 +4,8 @@ import User from '../user/User.model.js'
 import Conference from '../conference/Conference.model'
 import Payment from '../payment/Payment.model'
 import Resource from '../resource/Resource.model'
+import _ from 'lodash';
+import responseHandler from '../../../../lib/response.handler';
 
 export async function chargeAmount(req, res, next) {
   if (req.user && req.body) {
@@ -97,6 +99,22 @@ export async function chargeResourceAmount(req, res, next) {
     .catch(error => {
       res.status(400).send({message: 'Error Occured: ' + error.message });
       return;
+    });
+  }
+}
+
+export async function getPaidPaymentsForAdmin(req, res, next) {
+  if (req.user && _.isEqual(req.user.role, 'ROLE_ADMIN')) {
+    await Payment.find({})
+    .populate('conference', '_id name')
+    .populate('attendee', '_id firstname lastname email imageurl phonenumber')
+    .then(data => {
+      responseHandler.sendRespond(res, data);
+      next();
+    })
+    .catch(error => {
+      responseHandler.handleError(res, error.message);
+      next();
     });
   }
 }
