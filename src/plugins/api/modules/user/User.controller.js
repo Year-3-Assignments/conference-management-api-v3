@@ -99,7 +99,11 @@ export function getUserAccount(req, res, next) {
 // get notifications for user
 export async function getUserNotifications(req, res, next) {
   if (req.user) {
-    await Notification.find({ to: req.user._id }).sort({ createdAt: 'desc' }).limit(1)
+    await Notification.find({ to: req.user._id })
+    .populate('from', '_id firstname lastname email imageurl')
+    .populate('to', '_id firstname lastname email imageurl')
+    .sort({ createdAt: 'desc' })
+    .limit(1)
     .then(data => {
       response.sendRespond(res, data);
       return;
