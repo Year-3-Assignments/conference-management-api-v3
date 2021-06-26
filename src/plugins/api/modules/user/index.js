@@ -16,6 +16,8 @@ module.exports = function (app, db) {
   router.get('/editors', auth, controller.getEditorAccounts);
   router.get('/users', controller.getAllUserAccounts);
   router.put('/changerole', auth, controller.changeUserRole);
+  router.post('/requestrole', auth, controller.requestForRoleChange);
+  router.get('/getrequestroles', auth, controller.getRoleRequests);
 
   return { router: router };
 }
