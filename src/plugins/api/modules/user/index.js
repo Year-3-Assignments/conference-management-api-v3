@@ -15,6 +15,7 @@ module.exports = function (app, db) {
   router.get('/reviewers', auth, controller.getReviewerAccounts);
   router.get('/editors', auth, controller.getEditorAccounts);
   router.get('/users', controller.getAllUserAccounts);
+  router.put('/changerole', auth, controller.changeUserRole);
 
   return { router: router };
 }

@@ -79,6 +79,29 @@ export async function updateUserAccount(req, res, next) {
   }
 }
 
+export async function changeUserRole(req, res, next) {
+  if (req.user && req.body && req.body.userId && req.body.role) {
+    if (_.isEqual(req.user.role, 'ROLE_ADMIN')) {
+      const user = await User.findById(req.body.userId);
+      const userRole = await User.findByIdAndUpdate(req.body.userId, { role: req.body.role });
+      const notificationData = {
+        from: req.user._id,
+        to: req.body.userId,
+        message: `Hi ${user.firstname} ${user.lastname}, your role now changed to ${req.body.role}`,
+        isarchive: false
+      }
+      const notification = await new Notification(notificationData);
+      await notification.save();
+      response.sendRespond(res, userRole);
+      next();
+    } else {
+      response.handleError(res, 'Only admin can change the role');
+    }
+  } else {
+    response.handleError(res, 'Cannot change user role');
+  }
+}
+
 // delete user account - private
 export async function deleteUserAccount(req, res, next) {
   const user = await User.findByIdAndDelete(req.user.id);
