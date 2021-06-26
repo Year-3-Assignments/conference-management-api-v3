@@ -100,7 +100,7 @@ export async function requestForRoleChange(req, res, next) {
 
 export async function getRoleRequests(req, res, next) {
   if (req.user && _.isEqual(req.user.role, 'ROLE_ADMIN')) {
-    await RoleRequest.find({})
+    await RoleRequest.find({ isarchive: false })
     .populate('requestedby', '_id firstname lastname email phonenumber imageurl')
     .sort({ createdAt: 'desc' })
     .then(data => {
@@ -129,6 +129,7 @@ export async function changeUserRole(req, res, next) {
       }
       const notification = await new Notification(notificationData);
       await notification.save();
+      await RoleRequest.findByIdAndUpdate(req.body.requestid, { isarchive: true });
       response.sendRespond(res, userRole);
       next();
     } else {
