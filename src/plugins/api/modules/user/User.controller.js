@@ -116,7 +116,7 @@ export async function getRoleRequests(req, res, next) {
   }
 }
 
-export async function changeUserRole(req, res, next) {
+export async function approveRoleChangeRequest(req, res, next) {
   if (req.user && req.body && req.body.userId && req.body.role) {
     if (_.isEqual(req.user.role, 'ROLE_ADMIN')) {
       const user = await User.findById(req.body.userId);
@@ -126,7 +126,7 @@ export async function changeUserRole(req, res, next) {
         to: req.body.userId,
         message: `Hi ${user.firstname} ${user.lastname}, your role now changed to ${req.body.role}`,
         isarchive: false
-      }
+      };
       const notification = await new Notification(notificationData);
       await notification.save();
       await RoleRequest.findByIdAndUpdate(req.body.requestid, { isarchive: true });
@@ -137,6 +137,26 @@ export async function changeUserRole(req, res, next) {
     }
   } else {
     response.handleError(res, 'Cannot change user role');
+  }
+}
+
+export async function rejectRoleChangeRequest(req, res, next) {
+  if (req.user && req.body && req.body.userId) {
+    if (_.isEqual(req.user.role, 'ROLE_ADMIN')) {
+      const user = await User.findById(req.body.userId);
+      const notificationData = {
+        from: req.user._id,
+        to: req.body.userId,
+        message: `Hi ${user.firstname} ${user.lastname}, your role change request has been rejected by the admin`,
+        isarchive: false
+      };
+      const notification = await new Notification(notificationData);
+      await notification.save();
+      response.sendRespond(res, notification);
+      next();
+    } else {
+      response.handleError(res, 'Cannot change user role');
+    }
   }
 }
 
