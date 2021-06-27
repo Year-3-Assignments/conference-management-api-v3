@@ -152,6 +152,22 @@ export async function changeResourceStatus(req, res, next) {
         await notification.save()
       }
 
+      if (_.isEqual(req.body.status, 'REJECTED')) {
+        // mark resource as rejected
+        status = 'REJECTED';
+
+        // send a notification to relevent user
+        let notificationData = {
+          resource: resource._id,
+          from: req.user._id,
+          message: req.body.message,
+          to: resource.createdby,
+          isarchive: false
+        }
+        let notification = new Notification(notificationData);
+        await notification.save()
+      }
+
       await Resource.findByIdAndUpdate(req.params.id, { status: status })
       .then(data => {
         response.sendRespond(res, data);
