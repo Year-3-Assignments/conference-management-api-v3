@@ -130,8 +130,11 @@ export async function changeResourceStatus(req, res, next) {
           from: req.user._id,
           message: req.body.message,
           to: resource.createdby,
-          isarchive: false
+          isarchive: false,
+          payment: true,
+          amount: req.body.amount
         }
+        console.log(notificationData);
         let notification = new Notification(notificationData);
         await notification.save()
       }
@@ -139,6 +142,22 @@ export async function changeResourceStatus(req, res, next) {
       if (_.isEqual(req.body.status, 'PENDING')) {
         // mark resource as pending
         status = 'PENDING';
+
+        // send a notification to relevent user
+        let notificationData = {
+          resource: resource._id,
+          from: req.user._id,
+          message: req.body.message,
+          to: resource.createdby,
+          isarchive: false
+        }
+        let notification = new Notification(notificationData);
+        await notification.save()
+      }
+
+      if (_.isEqual(req.body.status, 'REJECTED')) {
+        // mark resource as rejected
+        status = 'REJECTED';
 
         // send a notification to relevent user
         let notificationData = {
