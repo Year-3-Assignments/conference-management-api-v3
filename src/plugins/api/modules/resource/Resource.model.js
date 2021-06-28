@@ -11,7 +11,11 @@ const ResourceSchema = new Schema({
   createdby: { type: Schema.Types.ObjectId, required: true, ref: 'users' },
   resourceurls: [{ type: String, required: true, trim: true }],
   ispaid: { type: Boolean, required: false, default: false },
-  resourcepersons: [{ type: Schema.Types.ObjectId, required: true, ref: 'users' }]
+  resourcepersons: [{ type: Schema.Types.ObjectId, required: true, ref: 'users' }],
+  isEditor: { type: Boolean, required: false, default: false },
+  publish_title: { type: String, required: false, trim: true },
+  publish_description: { type: String, required: false, trim: true },
+  publish_img_url: { type: String, required: false, trim: true }
 }, {
   timestamps: true
 });
