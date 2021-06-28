@@ -7,7 +7,9 @@ const NotificationSchema = new Schema({
   from: { type: Schema.Types.ObjectId, required: false, ref: 'users' },
   message: { type: String, required: true, trim: true },
   to: { type: Schema.Types.ObjectId, required: true, ref: 'users' },
-  isarchive: { type: Boolean, required: true }
+  isarchive: { type: Boolean, required: true },
+  payment: {type: Boolean, required: false},
+  amount: { type: String, required: false, trim: true }
 }, {
   strict: false,
   timestamps: true

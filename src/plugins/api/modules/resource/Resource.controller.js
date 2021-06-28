@@ -130,7 +130,9 @@ export async function changeResourceStatus(req, res, next) {
           from: req.user._id,
           message: req.body.message,
           to: resource.createdby,
-          isarchive: false
+          isarchive: false,
+          payment: true,
+          amount: req.body.amount
         }
         let notification = new Notification(notificationData);
         await notification.save()
