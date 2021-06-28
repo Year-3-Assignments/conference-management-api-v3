@@ -134,6 +134,7 @@ export async function changeResourceStatus(req, res, next) {
           payment: true,
           amount: req.body.amount
         }
+        console.log(notificationData);
         let notification = new Notification(notificationData);
         await notification.save()
       }
