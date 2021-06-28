@@ -13,6 +13,8 @@ module.exports = function (app, db) {
   router.delete('/remove/:id', auth, controller.deleteResource);
   router.put('/paid/:id', auth, controller.makeResourcePaid);
   router.get('/editor/resources', auth, controller.getResourcesForEditor);
+  router.get('/admin/resources', auth, controller.getResourcesForAdmin);
+  router.put('/editpublish/:id', auth, controller.ediorPublishResource);
 
   return { router: router };
 }
