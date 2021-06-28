@@ -14,7 +14,7 @@ module.exports = function (app, db) {
   router.put('/paid/:id', auth, controller.makeResourcePaid);
   router.get('/editor/resources', auth, controller.getResourcesForEditor);
   router.get('/admin/resources', auth, controller.getResourcesForAdmin);
-  router.put('/admin/update', auth, controller.ediorPublishResource);
+  router.put('/editpublish/:id', auth, controller.ediorPublishResource);
 
   return { router: router };
 }
