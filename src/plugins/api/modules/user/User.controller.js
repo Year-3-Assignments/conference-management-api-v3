@@ -1,4 +1,5 @@
 import User from './User.model';
+import RoleRequest from './RoleRequest.model';
 import Notification from './Notification.model';
 import response from '../../../../lib/response.handler';
 import bcrypt from 'bcryptjs';
@@ -79,6 +80,86 @@ export async function updateUserAccount(req, res, next) {
   }
 }
 
+export async function requestForRoleChange(req, res, next) {
+  if (req.user) {
+    const roleChange = new RoleRequest(req.body);
+    await roleChange.save();
+    const notificationData = {
+      message: `Your request to become ${req.body.requestrole} is sent successfully`,
+      to: req.user._id,
+      isarchive: false
+    }
+    const notification = new Notification(notificationData);
+    await notification.save();
+    response.sendRespond(res, roleChange);
+    next();
+  } else {
+    response.handleError(res, 'User have to register to the system');
+  }
+}
+
+export async function getRoleRequests(req, res, next) {
+  if (req.user && _.isEqual(req.user.role, 'ROLE_ADMIN')) {
+    await RoleRequest.find({ isarchive: false })
+    .populate('requestedby', '_id firstname lastname email phonenumber imageurl')
+    .sort({ createdAt: 'desc' })
+    .then(data => {
+      response.sendRespond(res, data);
+      next();
+    })
+    .catch(error => {
+      response.handleError(res, error.message);
+      next();
+    });
+  } else {
+    response.handleError(res, 'Only admin can get these information');
+  }
+}
+
+export async function approveRoleChangeRequest(req, res, next) {
+  if (req.user && req.body && req.body.userId && req.body.role) {
+    if (_.isEqual(req.user.role, 'ROLE_ADMIN')) {
+      const user = await User.findById(req.body.userId);
+      const userRole = await User.findByIdAndUpdate(req.body.userId, { role: req.body.role });
+      const notificationData = {
+        from: req.user._id,
+        to: req.body.userId,
+        message: `Hi ${user.firstname} ${user.lastname}, your role now changed to ${req.body.role}`,
+        isarchive: false
+      };
+      const notification = await new Notification(notificationData);
+      await notification.save();
+      await RoleRequest.findByIdAndUpdate(req.body.requestid, { isarchive: true });
+      response.sendRespond(res, userRole);
+      next();
+    } else {
+      response.handleError(res, 'Only admin can change the role');
+    }
+  } else {
+    response.handleError(res, 'Cannot change user role');
+  }
+}
+
+export async function rejectRoleChangeRequest(req, res, next) {
+  if (req.user && req.body && req.body.userId) {
+    if (_.isEqual(req.user.role, 'ROLE_ADMIN')) {
+      const user = await User.findById(req.body.userId);
+      const notificationData = {
+        from: req.user._id,
+        to: req.body.userId,
+        message: `Hi ${user.firstname} ${user.lastname}, your role change request has been rejected by the admin`,
+        isarchive: false
+      };
+      const notification = await new Notification(notificationData);
+      await notification.save();
+      response.sendRespond(res, notification);
+      next();
+    } else {
+      response.handleError(res, 'Cannot change user role');
+    }
+  }
+}
+
 // delete user account - private
 export async function deleteUserAccount(req, res, next) {
   const user = await User.findByIdAndDelete(req.user.id);
@@ -99,7 +180,10 @@ export function getUserAccount(req, res, next) {
 // get notifications for user
 export async function getUserNotifications(req, res, next) {
   if (req.user) {
-    await Notification.find({ to: req.user._id }).sort({ createdAt: 'desc' }).limit(1)
+    await Notification.find({ to: req.user._id })
+    .populate('from', '_id firstname lastname email imageurl')
+    .populate('to', '_id firstname lastname email imageurl')
+    .sort({ createdAt: 'asc' })
     .then(data => {
       response.sendRespond(res, data);
       return;

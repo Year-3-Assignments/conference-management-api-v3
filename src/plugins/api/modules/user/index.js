@@ -15,6 +15,10 @@ module.exports = function (app, db) {
   router.get('/reviewers', auth, controller.getReviewerAccounts);
   router.get('/editors', auth, controller.getEditorAccounts);
   router.get('/users', controller.getAllUserAccounts);
+  router.put('/approve', auth, controller.approveRoleChangeRequest);
+  router.put('/reject', controller.rejectRoleChangeRequest);
+  router.post('/requestrole', auth, controller.requestForRoleChange);
+  router.get('/getrequestroles', auth, controller.getRoleRequests);
 
   return { router: router };
 }

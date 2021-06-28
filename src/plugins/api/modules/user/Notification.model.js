@@ -8,10 +8,10 @@ const NotificationSchema = new Schema({
   message: { type: String, required: true, trim: true },
   to: { type: Schema.Types.ObjectId, required: true, ref: 'users' },
   isarchive: { type: Boolean, required: true }
-}, 
-  { strict: false },
-  { timestamps: true }
-);
+}, {
+  strict: false,
+  timestamps: true
+});
 
 const Notification = mongoose.model('notifications', NotificationSchema);
 module.exports = Notification;
