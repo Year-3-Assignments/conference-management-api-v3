@@ -186,7 +186,7 @@ export async function getUserNotifications(req, res, next) {
     .populate('resource', '_id name venue time description type resourceurls')
     .populate('conference', '_id name venue startdate enddate description')
     .populate('workshop', '_id name description time place')
-    .sort({ createdAt: 'asc' })
+    .sort({ createdAt: 'desc' })
     .then(data => {
       response.sendRespond(res, data);
       return;
