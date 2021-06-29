@@ -17,5 +17,6 @@ module.exports = function (app, db) {
   router.put('/editpublish/:id', auth, controller.ediorPublishResource);
   router.get('/approvedresources', auth, controller.getAllApprovedRespources);
   router.get('/latestapprovedresource', auth, controller.latestApprovedResource);
+
   return { router: router };
 }

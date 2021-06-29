@@ -18,20 +18,6 @@ export async function createResource(req, res, next) {
   }
 }
 
-export async function getAllResouces(req, res, next) {
-  await Resource.find({})
-  .populate('createdby', '_id firstname lastname email username phonenumber imageurl description')
-  .populate('resourcepersons', '_id firstname lastname email username phonenumber imageurl description')
-  .then((data) => {
-    response.sendRespond(res, data);
-    next();
-  })
-  .catch(error => {
-    response.handleError(res, error.message);
-    next();
-  });
-}
-
 export async function getUserResorces(req, res, next) {
   if (req.user) {
     await Resource.find({ createdby: req.user._id })
@@ -48,22 +34,6 @@ export async function getUserResorces(req, res, next) {
   } else {
     response.handleError(res, 'Only authenticated user can access this route');
     return;
-  }
-}
-
-export async function getResourceById(req, res, next) {
-  if (req.params && req.params.id) {
-    await Resource.findById(req.params.id)
-    .populate('createdby', '_id firstname lastname email username phonenumber imageurl description')
-    .populate('resourcepersons', '_id firstname lastname email username phonenumber imageurl description')
-    .then((data) => {
-      response.sendRespond(res, data);
-      next();
-    })
-    .catch(error => {
-      response.handleError(res, error.message);
-      next();
-    });
   }
 }
 
@@ -121,10 +91,8 @@ export async function changeResourceStatus(req, res, next) {
       }
 
       if (_.isEqual(req.body.status, 'APPROVED')) {
-        // mark resource as approved
         status = 'APPROVED';
 
-        // send a notification to relevent user
         let notificationData = {
           resource: resource._id,
           from: req.user._id,
@@ -140,10 +108,8 @@ export async function changeResourceStatus(req, res, next) {
       }
 
       if (_.isEqual(req.body.status, 'PENDING')) {
-        // mark resource as pending
         status = 'PENDING';
 
-        // send a notification to relevent user
         let notificationData = {
           resource: resource._id,
           from: req.user._id,
@@ -156,10 +122,8 @@ export async function changeResourceStatus(req, res, next) {
       }
 
       if (_.isEqual(req.body.status, 'REJECTED')) {
-        // mark resource as rejected
         status = 'REJECTED';
 
-        // send a notification to relevent user
         let notificationData = {
           resource: resource._id,
           from: req.user._id,
@@ -171,7 +135,7 @@ export async function changeResourceStatus(req, res, next) {
         await notification.save()
       }
 
-      await Resource.findByIdAndUpdate(req.params.id, { status: status })
+      await Resource.findByIdAndUpdate(req.params.id, { status: status, reveiwedby: req.user._id })
       .then(data => {
         response.sendRespond(res, data);
         next();
@@ -235,40 +199,24 @@ export async function makeResourcePaid(req, res, next) {
   }
 }
 
-export async function ediorPublishResource(req, res, next) {
+export async function getResourceById(req, res, next) {
   if (req.params && req.params.id) {
-    if (_.isEqual(req.user.role, 'ROLE_EDITOR')) {
-      let resource = await Resource.findById(req.params.id);
-      if (!resource) {
-        response.handleError(res, 'Resource not found');
-        return;
-      }
-
-      let resourceUpdateData = {
-        isEditor: true,
-        publish_title: req.body.publish_title,
-        publish_description: req.body.publish_description,
-        publish_img_url: req.body.publish_img_url
-      };
-      
-      await Resource.findByIdAndUpdate(req.params.id, resourceUpdateData)
-      .then(data => {
-        response.sendRespond(res, data);
-        next();
-      })
-      .catch(error => {
-        response.handleError(res, error.message);
-        next();
-      });
-    }else {
-      response.handleError(res, 'Only Editor Update these Resources');
-      return;
-    }
+    await Resource.findById(req.params.id)
+    .populate('createdby', '_id firstname lastname email username phonenumber imageurl description')
+    .populate('resourcepersons', '_id firstname lastname email username phonenumber imageurl description')
+    .then((data) => {
+      response.sendRespond(res, data);
+      next();
+    })
+    .catch(error => {
+      response.handleError(res, error.message);
+      next();
+    });
   }
 }
 
-export async function getResourcesForAdmin(req, res, next) {
-  await Resource.find({ isEditor: true })
+export async function getAllResouces(req, res, next) {
+  await Resource.find({})
   .populate('createdby', '_id firstname lastname email username phonenumber imageurl description')
   .populate('resourcepersons', '_id firstname lastname email username phonenumber imageurl description')
   .then((data) => {

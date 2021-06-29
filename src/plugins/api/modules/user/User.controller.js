@@ -180,10 +180,13 @@ export function getUserAccount(req, res, next) {
 // get notifications for user
 export async function getUserNotifications(req, res, next) {
   if (req.user) {
-    await Notification.find({ to: req.user._id })
+    await Notification.find({ to: req.user._id, isarchive: false })
     .populate('from', '_id firstname lastname email imageurl')
     .populate('to', '_id firstname lastname email imageurl')
-    .sort({ createdAt: 'asc' })
+    .populate('resource', '_id name venue time description type resourceurls')
+    .populate('conference', '_id name venue startdate enddate description')
+    .populate('workshop', '_id name description time place')
+    .sort({ createdAt: 'desc' })
     .then(data => {
       response.sendRespond(res, data);
       return;

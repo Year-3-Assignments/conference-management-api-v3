@@ -4,6 +4,7 @@ const ResourceSchema = new Schema({
   name: { type: String, required: true, trim: true },
   time: { type: String, required: true, trim: true },
   description: { type: String, required: true, trim: true },
+  reveiwedby: { type: Schema.Types.ObjectId, required: false, ref: 'users' },
   status: { type: String, required: true, trim: true },
   amount: { type: Number, required: false, trim: true },
   type: { type: String, required: true, trim: true },
