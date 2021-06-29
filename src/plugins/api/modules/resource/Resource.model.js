@@ -2,6 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 
 const ResourceSchema = new Schema({
   name: { type: String, required: true, trim: true },
+  venue: { type: String, required: true, trim: true },
   time: { type: String, required: true, trim: true },
   description: { type: String, required: true, trim: true },
   reveiwedby: { type: Schema.Types.ObjectId, required: false, ref: 'users' },
