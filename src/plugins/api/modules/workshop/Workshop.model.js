@@ -3,16 +3,13 @@ import mongoose, { Schema } from 'mongoose';
 const WorkshopSchema = new Schema({
   name: {type: String, required: false,  trim: true},
   description: { type: String,  required: [true, 'Workshop speaker description'], trim: true },
-  createddate: { type: Date, required: false, trim: true },
-  time:{type: String, required: false, trim: true },
-  place: { type: String,required: [true, 'Workshop venue'],trim: true },
   imageurl: { type: String, required: false, trim: true },
-  users:[{ type: Schema.Types.ObjectId, required: true, ref: 'users' }],
+  resource: { type: Schema.Types.ObjectId, required: true, ref: 'resources' },
   attendees:[{ type: Schema.Types.ObjectId, required: false, ref: 'users' }],
-}, 
-  { strict: false },
-  { timesamps: true}
-);
+  createdby: { type: Schema.Types.ObjectId, required: true, ref: 'users' },
+  isapproved: { type: Boolean, required: false, default: false }
+}, {
+  timestamps: true
+});
 const Workshop = mongoose.model('workshops', WorkshopSchema);
-
-module.exports = Workshop;
+export default Workshop;
