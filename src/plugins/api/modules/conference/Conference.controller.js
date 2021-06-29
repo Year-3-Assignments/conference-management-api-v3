@@ -149,3 +149,18 @@ export async function updateConferenceStatus(req, res, next) {
     }
   }
 }
+
+export async function getConferenceForHomePage(req, res, next) {
+  console.log("Enteres Successfully");
+  await Conference.find({})
+  .populate('createdby', '_id firstname lastname email phonenumber imageurl')
+  .populate({ path: 'resource', populate:{ path: 'resourcepersons', model: 'users', select: '_id firstname lastname email phonenumber imageurl'}})
+  .then(data => {
+    response.sendRespond(res, data);
+    return;
+  })
+  .catch(error => {
+    response.handleError(res, error.message);
+    return;
+  });
+}
