@@ -2,7 +2,6 @@ import mongoose, { Schema } from 'mongoose';
 
 const ResourceSchema = new Schema({
   name: { type: String, required: true, trim: true },
-  venue: { type: String, required: true, trim: true },
   time: { type: String, required: true, trim: true },
   description: { type: String, required: true, trim: true },
   status: { type: String, required: true, trim: true },
@@ -13,9 +12,7 @@ const ResourceSchema = new Schema({
   ispaid: { type: Boolean, required: false, default: false },
   resourcepersons: [{ type: Schema.Types.ObjectId, required: true, ref: 'users' }],
   isEditor: { type: Boolean, required: false, default: false },
-  publish_title: { type: String, required: false, trim: true },
-  publish_description: { type: String, required: false, trim: true },
-  publish_img_url: { type: String, required: false, trim: true }
+  isAdminApproved: { type: Boolean, required: false, default: false },
 }, {
   timestamps: true
 });

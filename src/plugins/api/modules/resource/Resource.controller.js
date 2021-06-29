@@ -280,3 +280,33 @@ export async function getResourcesForAdmin(req, res, next) {
     next();
   });
 }
+
+export async function getAllApprovedRespources(req, res, next) {
+  await Resource.find({ isAdminApproved: true })
+  .populate('createdby', '_id firstname lastname email username phonenumber imageurl description')
+  .populate('resourcepersons', '_id firstname lastname email username phonenumber imageurl description')
+  .sort({ createdAt: 'asc' })
+  .then((data) => {
+    response.sendRespond(res, data);
+    next();
+  })
+  .catch(error => {
+    response.handleError(res, error.message);
+    next();
+  });
+}
+
+export async function latestApprovedResource(req, res, next) {
+  await Resource.findOne({ isAdminApproved: true })
+  .populate('createdby', '_id firstname lastname email username phonenumber imageurl description')
+  .populate('resourcepersons', '_id firstname lastname email username phonenumber imageurl description')
+  .sort({ createdAt: 'asc' })
+  .then((data) => {
+    response.sendRespond(res, data);
+    next();
+  })
+  .catch(error => {
+    response.handleError(res, error.message);
+    next();
+  });
+}
