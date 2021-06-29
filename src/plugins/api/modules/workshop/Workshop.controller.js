@@ -67,6 +67,7 @@ export async function getWorkshopsForAdmin(req, res, next) {
   if (req.user && _.isEqual(req.user.role, enums.ROLE_ADMIN)) {
     await Workshop.find({ isapproved: false })
     .populate('attendees', '_id firstname lastname description imageurl email phonenumber')
+    .populate('createdby', '_id firstname lastname description imageurl email phonenumber')
     .populate({ 
       path: 'resource', 
       populate:{ path: 'resourcepersons', model: 'users', select: '_id firstname lastname email phonenumber imageurl description'}
