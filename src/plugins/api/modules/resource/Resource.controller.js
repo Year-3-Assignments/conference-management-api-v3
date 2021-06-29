@@ -2,6 +2,7 @@ import Resource from './Resource.model';
 import Notification from '../user/Notification.model';
 import response from '../../../../lib/response.handler';
 import _ from 'lodash';
+import enums from './enums';
 
 export async function createResource(req, res, next) {
   if (req.body) {
@@ -16,20 +17,6 @@ export async function createResource(req, res, next) {
       next();
     });
   }
-}
-
-export async function getAllResouces(req, res, next) {
-  await Resource.find({})
-  .populate('createdby', '_id firstname lastname email username phonenumber imageurl description')
-  .populate('resourcepersons', '_id firstname lastname email username phonenumber imageurl description')
-  .then((data) => {
-    response.sendRespond(res, data);
-    next();
-  })
-  .catch(error => {
-    response.handleError(res, error.message);
-    next();
-  });
 }
 
 export async function getUserResorces(req, res, next) {
@@ -51,24 +38,8 @@ export async function getUserResorces(req, res, next) {
   }
 }
 
-export async function getResourceById(req, res, next) {
-  if (req.params && req.params.id) {
-    await Resource.findById(req.params.id)
-    .populate('createdby', '_id firstname lastname email username phonenumber imageurl description')
-    .populate('resourcepersons', '_id firstname lastname email username phonenumber imageurl description')
-    .then((data) => {
-      response.sendRespond(res, data);
-      next();
-    })
-    .catch(error => {
-      response.handleError(res, error.message);
-      next();
-    });
-  }
-}
-
 export async function getResourcesForEditor(req, res, next) {
-  await Resource.find({ ispaid: true })
+  await Resource.find({ ispaid: true, isedited: false })
   .populate('createdby', '_id firstname lastname email username phonenumber imageurl description')
   .populate('resourcepersons', '_id firstname lastname email username phonenumber imageurl description')
   .then((data) => {
@@ -121,10 +92,8 @@ export async function changeResourceStatus(req, res, next) {
       }
 
       if (_.isEqual(req.body.status, 'APPROVED')) {
-        // mark resource as approved
         status = 'APPROVED';
 
-        // send a notification to relevent user
         let notificationData = {
           resource: resource._id,
           from: req.user._id,
@@ -140,10 +109,8 @@ export async function changeResourceStatus(req, res, next) {
       }
 
       if (_.isEqual(req.body.status, 'PENDING')) {
-        // mark resource as pending
         status = 'PENDING';
 
-        // send a notification to relevent user
         let notificationData = {
           resource: resource._id,
           from: req.user._id,
@@ -156,10 +123,8 @@ export async function changeResourceStatus(req, res, next) {
       }
 
       if (_.isEqual(req.body.status, 'REJECTED')) {
-        // mark resource as rejected
         status = 'REJECTED';
 
-        // send a notification to relevent user
         let notificationData = {
           resource: resource._id,
           from: req.user._id,
@@ -171,7 +136,7 @@ export async function changeResourceStatus(req, res, next) {
         await notification.save()
       }
 
-      await Resource.findByIdAndUpdate(req.params.id, { status: status })
+      await Resource.findByIdAndUpdate(req.params.id, { status: status, reveiwedby: req.user._id })
       .then(data => {
         response.sendRespond(res, data);
         next();
@@ -237,7 +202,7 @@ export async function makeResourcePaid(req, res, next) {
 
 export async function ediorPublishResource(req, res, next) {
   if (req.params && req.params.id) {
-    if (_.isEqual(req.user.role, 'ROLE_EDITOR')) {
+    if (_.isEqual(req.user.role, enums.ROLE_EDITOR)) {
       let resource = await Resource.findById(req.params.id);
       if (!resource) {
         response.handleError(res, 'Resource not found');
@@ -245,10 +210,10 @@ export async function ediorPublishResource(req, res, next) {
       }
 
       let resourceUpdateData = {
-        isEditor: true,
-        publish_title: req.body.publish_title,
-        publish_description: req.body.publish_description,
-        publish_img_url: req.body.publish_img_url
+        isedited: true,
+        publishtitle: req.body.publishtitle,
+        publishdescription: req.body.publishdescription,
+        publishimgurl: req.body.publishimgurl
       };
       
       await Resource.findByIdAndUpdate(req.params.id, resourceUpdateData)
@@ -268,7 +233,91 @@ export async function ediorPublishResource(req, res, next) {
 }
 
 export async function getResourcesForAdmin(req, res, next) {
-  await Resource.find({ isEditor: true })
+  await Resource.find({ isedited: true })
+  .populate('createdby', '_id firstname lastname email username phonenumber imageurl description')
+  .populate('resourcepersons', '_id firstname lastname email username phonenumber imageurl description')
+  .then((data) => {
+    response.sendRespond(res, data);
+    next();
+  })
+  .catch(error => {
+    response.handleError(res, error.message);
+    next();
+  });
+}
+
+export async function changeResourceStatusByAdmin(req, res, next) {
+  if (req.user && _.isEqual(req.user.role, enums.ROLE_ADMIN)) {
+    if (req.body && req.body.resourceid) {
+      if (_.isEqual(req.body.status, enums.ADMIN_APPROVED)) {
+        await Resource.findByIdAndUpdate(req.body.resourceid, { 
+          adminstatus: enums.ADMIN_APPROVED 
+        })
+        .then(data => {
+          response.sendRespond(res, data);
+          next();
+        })
+        .catch(error => {
+          response.handleError(res, error.message);
+          next();
+        });
+      }
+
+      if (_.isEqual(req.body.status, enums.EDIT_REQUIRED)) {
+        await Resource.findByIdAndUpdate(req.body.resourceid, { 
+          adminstatus: enums.EDIT_REQUIRED, 
+          isedited: false,
+          adminmessage: req.body.message
+        })
+        .then(async data => {
+          response.sendRespond(res, data);
+        })
+        .catch(error => {
+          response.handleError(res, error.message);
+          next();
+        })
+      }
+    }
+  } else {
+    response.handleError(res, 'Only Admin can do these modifications');
+    return;
+  }
+}
+
+
+export async function getResourceById(req, res, next) {
+  if (req.params && req.params.id) {
+    await Resource.findById(req.params.id)
+    .populate('createdby', '_id firstname lastname email username phonenumber imageurl description')
+    .populate('resourcepersons', '_id firstname lastname email username phonenumber imageurl description')
+    .then((data) => {
+      response.sendRespond(res, data);
+      next();
+    })
+    .catch(error => {
+      response.handleError(res, error.message);
+      next();
+    });
+  }
+}
+
+
+export async function getAllResouces(req, res, next) {
+  await Resource.find({})
+  .populate('createdby', '_id firstname lastname email username phonenumber imageurl description')
+  .populate('resourcepersons', '_id firstname lastname email username phonenumber imageurl description')
+  .then((data) => {
+    response.sendRespond(res, data);
+    next();
+  })
+  .catch(error => {
+    response.handleError(res, error.message);
+    next();
+  });
+}
+
+export async function getChangeRequiredResourcesForEditor(req, res, next) {
+  await Resource.find({ adminstatus: enums.EDIT_REQUIRED })
   .populate('createdby', '_id firstname lastname email username phonenumber imageurl description')
   .populate('resourcepersons', '_id firstname lastname email username phonenumber imageurl description')
   .then((data) => {
