@@ -2,7 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 
 const ConferenceSchema = new Schema({
   name: { type: String, required: true, trim: true },
-  imageurl: { type: String, required: false, trim: true },
+  image_url: { type: String, required: false, trim: true },
   description: { type: String, required: true, trim: true },
   amount: { type: Number, required: false, trim: true },
   status: { type: String, required: true, trim: true },
