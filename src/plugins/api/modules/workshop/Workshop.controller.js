@@ -1,13 +1,20 @@
-const Workshop = require('./Workshop.model');
+import Workshop from './Workshop.model';
 import response from '../../../../lib/response.handler';
 import _ from 'lodash';
 import User from '../user/User.model.js'
-import Notification from '../user/Notification.model'
+import Notification from '../user/Notification.model';
+import enums from '../enums';
 
 export async function createWorkshop(req, res, next) {
-  if (req.body) {
-    console.log(req.body)
-    let workshop = new Workshop(req.body);
+  if (req.user && req.body) {
+    const workhopDetails = {
+      name: req.body.name,
+      description: req.body.description,
+      imageurl: req.body.imageurl,
+      createdby: req.user._id,
+      resource: req.body.resource
+    }
+    let workshop = new Workshop(workhopDetails);
     await workshop.save()
     .then(() => {
       response.sendRespond(res, workshop);
@@ -20,10 +27,8 @@ export async function createWorkshop(req, res, next) {
   }
 }
 
-//update workshops
 export async function updateWorkshop(req, res, next) {
   if (req.body && req.body._id) {
-    console.log(req.body);
     let workshop = await Workshop.findById(req.body._id);
     if (!workshop) {
       response.handleError(res, 'Workshop  not found');
@@ -32,11 +37,7 @@ export async function updateWorkshop(req, res, next) {
     let workshopUpdateData = {
       name: req.body.name,
       description: req.body.description,
-      createddate: req.body.createddate,
-      time: req.body.time,
-      place: req.body.place,
-      users: req.body.users,
-      attendees: req.body.attendees
+      imageurl: req.body.imageurl
     };
     
     await Workshop.findByIdAndUpdate(req.body._id, workshopUpdateData)
@@ -51,7 +52,6 @@ export async function updateWorkshop(req, res, next) {
   }
 }
 
-// delete workshops
 export async function deleteWorkshop(req, res, next) {
   if (req.params && req.params.id) {
     const workshop = await Workshop.findByIdAndDelete(req.workshop.id);
@@ -63,27 +63,33 @@ export async function deleteWorkshop(req, res, next) {
   }
 }
 
-// get all workshop details
-export async function getAllWorkshops(req, res, next) {
-  await Workshop.find({})
-  .populate('users', '_id firstname lastname description imageurl email phonenumber')
-  .populate('attendees', '_id firstname lastname description imageurl email phonenumber ')
-  .then((data) => {
-    response.sendRespond(res, data);
-    next();
-  })
-  .catch(error => {
-    response.handleError(res, error.message);
-    next();
-  });
+export async function getWorkshopsForAdmin(req, res, next) {
+  if (req.user && _.isEqual(req.user.role, enums.ROLE_ADMIN)) {
+    await Workshop.find({ isapproved: false })
+    .populate('attendees', '_id firstname lastname description imageurl email phonenumber')
+    .populate({ 
+      path: 'resource', 
+      populate:{ path: 'resourcepersons', model: 'users', select: '_id firstname lastname email phonenumber imageurl description'}
+    })
+    .then((data) => {
+      response.sendRespond(res, data);
+      next();
+    })
+    .catch(error => {
+      response.handleError(res, error.message);
+      next();
+    });
+  }
 }
 
-//get workshop by ID 
 export async function getWorkshopById(req, res, next) {
   if (req.params && req.params.id) {
     await Workshop.findById(req.params.id)
-    .populate('users', '_id firstname lastname description imageurl email phonenumber')
     .populate('attendees', '_id firstname lastname description imageurl email phonenumber ')
+    .populate({ 
+      path: 'resource', 
+      populate:{ path: 'resourcepersons', model: 'users', select: '_id firstname lastname email phonenumber imageurl description'}
+    })
     .then((data) => {
       response.sendRespond(res, data);
       next();
@@ -96,44 +102,69 @@ export async function getWorkshopById(req, res, next) {
 }
 
 export async function addAttendee(req, res, next) {
-
   if (req.user && req.body) {
-
-      let workshop = await Workshop.findById(req.body._id);
-
-      if (!workshop) {
-        response.handleError(res, 'Workshop not found');
-        return;
-      }
-
-      let notification_name = ""
-
-      // Add details to Workshop      
-      await Workshop.findByIdAndUpdate(req.body._id, { $push: {attendees: req.user._id}})
-      .then( async () => {
-        // Add details to User Collection
-        await User.findByIdAndUpdate({ _id: req.user._id }, { $push: {attending_workshops: req.body._id}})
-      }).then(async () => {
-        let data = await Workshop.findById(req.body._id)
-        notification_name = data.name;
-      }).then(async () => {
-          // Add details to Notification Collection
-          let notificationDetail = {
-            workshop: req.body._id,
-            message: req.body.message + " " + notification_name,
-            to: req.user._id,
-            isarchive: false
-          }
-          let notification = new Notification(notificationDetail);
-          await notification.save()
-      }).then(() => {
-        res.status(200).send({message: 'Conference Added Successfully.'});
-
-      })
-      .catch(error => {
-        res.status(400).send({message: 'Error Occured.'});
-      });
-
+    let workshop = await Workshop.findById(req.body._id);
+    if (!workshop) {
+      response.handleError(res, 'Workshop not found');
       return;
+    }
+
+    let notification_name = "";
+    
+    await Workshop.findByIdAndUpdate(req.body._id, { $push: {attendees: req.user._id}})
+    .then( async () => {
+      await User.findByIdAndUpdate({ _id: req.user._id }, { $push: {attending_workshops: req.body._id}})
+    }).then(async () => {
+      let data = await Workshop.findById(req.body._id)
+      notification_name = data.name;
+    }).then(async () => {
+        let notificationDetail = {
+          workshop: req.body._id,
+          message: req.body.message + " " + notification_name,
+          to: req.user._id,
+          isarchive: false
+        }
+        let notification = new Notification(notificationDetail);
+        await notification.save()
+    }).then(() => {
+      res.status(200).send({message: 'Conference Added Successfully.'});
+    })
+    .catch(error => {
+      res.status(400).send({message: 'Error Occured.'});
+    });
+    return;
   }
+}
+
+export async function changeApproveStatus(req, res, next) {
+  if (req.user && _.isEqual(req.user.role, enums.ROLE_ADMIN) && req.params && req.params.id) {
+    await Workshop.findByIdAndUpdate(req.params.id, { isapproved: true })
+    .then(data => {
+      response.sendRespond(res, data);
+      next();
+    })
+    .catch(error => {
+      response.handleError(res, error.message);
+    });
+  } else {
+    response.handleError(res, 'Only Admin can do these modifications');
+    return;
+  }
+}
+
+export async function getWorkshopsForHomePage(req, res, next) {
+  await Workshop.find({ isapproved: true })
+  .populate('attendees', '_id firstname lastname description imageurl email phonenumber ')
+  .populate({ 
+    path: 'resource', 
+    populate:{ path: 'resourcepersons', model: 'users', select: '_id firstname lastname email phonenumber imageurl description'}
+  })
+  .then((data) => {
+    response.sendRespond(res, data);
+    next();
+  })
+  .catch(error => {
+    response.handleError(res, error.message);
+    next();
+  });
 }

@@ -12,13 +12,7 @@ const ResourceSchema = new Schema({
   createdby: { type: Schema.Types.ObjectId, required: true, ref: 'users' },
   resourceurls: [{ type: String, required: true, trim: true }],
   ispaid: { type: Boolean, required: false, default: false },
-  resourcepersons: [{ type: Schema.Types.ObjectId, required: true, ref: 'users' }],
-  isedited: { type: Boolean, required: false, default: false },
-  publishtitle: { type: String, required: false, trim: true },
-  publishdescription: { type: String, required: false, trim: true },
-  publishimgurl: { type: String, required: false, trim: true },
-  adminstatus: { type: String, required: false, trim: true },
-  adminmessage: { type: String, required: false, trim: true }
+  resourcepersons: [{ type: Schema.Types.ObjectId, required: true, ref: 'users' }]
 }, {
   timestamps: true
 });
