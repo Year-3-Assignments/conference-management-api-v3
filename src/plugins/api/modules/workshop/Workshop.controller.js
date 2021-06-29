@@ -37,7 +37,7 @@ export async function updateWorkshop(req, res, next) {
     let workshopUpdateData = {
       name: req.body.name,
       description: req.body.description,
-      imageurl: req.body.imageurl
+      image_url: req.body.image_url
     };
     
     await Workshop.findByIdAndUpdate(req.body._id, workshopUpdateData)

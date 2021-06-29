@@ -83,11 +83,8 @@ export async function updateConference(req, res, next) {
       }
       let updateConferenceData = {
         name: req.body.name,
-        venue: req.body.venue,
-        startdate: req.body.startdate,
-        enddate: req.body.enddate,
-        amount: req.body.amount,
-        description: req.body.description
+        description: req.body.description,
+        image_url: req.body.image_url
       };
 
       await Conference.findByIdAndUpdate(req.body._id, updateConferenceData)
