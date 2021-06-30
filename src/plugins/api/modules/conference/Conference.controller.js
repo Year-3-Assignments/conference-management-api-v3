@@ -166,7 +166,7 @@ export async function getConferenceForHomePage(req, res, next) {
   .sort({ createdAt: -1 })
   .populate('createdby', '_id firstname lastname email phonenumber imageurl')
   .populate('atendees', '_id firstname lastname email phonenumber imageurl')
-  .populate({ path: 'resource', populate:{ path: 'resourcepersons', model: 'users', select: '_id firstname lastname email phonenumber imageurl'}})
+  .populate({ path: 'resource', populate:{ path: 'resourcepersons', model: 'users', select: '_id firstname lastname email phonenumber imageurl description'}})
   .limit(1)
   .then((data) => {
     return res.status(200).json(data);
