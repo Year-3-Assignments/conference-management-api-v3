@@ -10,7 +10,7 @@ export async function createWorkshop(req, res, next) {
     const workhopDetails = {
       name: req.body.name,
       description: req.body.description,
-      imageurl: req.body.imageurl,
+      image_url: req.body.imageurl,
       createdby: req.user._id,
       resource: req.body.resource
     }
