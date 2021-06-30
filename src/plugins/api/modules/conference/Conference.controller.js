@@ -168,12 +168,10 @@ export async function getConferenceForHomePage(req, res, next) {
   .populate('atendees', '_id firstname lastname email phonenumber imageurl')
   .populate({ path: 'resource', populate:{ path: 'resourcepersons', model: 'users', select: '_id firstname lastname email phonenumber imageurl'}})
   .limit(1)
-  .then(data => {
-    response.sendRespond(res, data);
-    return;
+  .then((data) => {
+    return res.status(200).json(data);
   })
   .catch(error => {
-    response.handleError(res, error.message);
-    return;
+    return res.status(500).json(error.message);
   });
 }

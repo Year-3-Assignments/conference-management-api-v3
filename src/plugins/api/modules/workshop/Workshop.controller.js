@@ -67,7 +67,7 @@ export async function deleteWorkshop(req, res, next) {
 }
 
 export async function getWorkshopsForAdmin(req, res, next) {
-  if (req.user && _.isEqual(req.user.role, enums.ROLE_ADMIN)) {
+  if (req.user && _.isEqual(req.user.role, 'ROLE_ADMIN')) {
     await Workshop.find({})
     .populate('attendees', '_id firstname lastname description imageurl email phonenumber')
     .populate('createdby', '_id firstname lastname description imageurl email phonenumber')
@@ -76,12 +76,10 @@ export async function getWorkshopsForAdmin(req, res, next) {
       populate:{ path: 'resourcepersons', model: 'users', select: '_id firstname lastname email phonenumber imageurl description'}
     })
     .then((data) => {
-      response.sendRespond(res, data);
-      next();
+      return res.status(200).json(data)
     })
     .catch(error => {
-      response.handleError(res, error.message);
-      next();
+      return res.status(500).json(error.messge);
     });
   }
 }
@@ -158,17 +156,18 @@ export async function changeApproveStatus(req, res, next) {
 
 export async function getWorkshopsForHomePage(req, res, next) {
   await Workshop.find({ isapproved: true })
+  .sort({ createdAt: -1 })
   .populate('attendees', '_id firstname lastname description imageurl email phonenumber ')
+  .populate('createdby', '_id firstname lastname description imageurl email phonenumber')
   .populate({ 
     path: 'resource', 
     populate:{ path: 'resourcepersons', model: 'users', select: '_id firstname lastname email phonenumber imageurl description'}
   })
+  .limit(1)
   .then((data) => {
-    response.sendRespond(res, data);
-    next();
+    return res.status(200).json(data)
   })
   .catch(error => {
-    response.handleError(res, error.message);
-    next();
+    return res.status(500).json(error.message)
   });
 }

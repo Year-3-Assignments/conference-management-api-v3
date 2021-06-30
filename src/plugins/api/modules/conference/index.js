@@ -11,7 +11,7 @@ module.exports = function (app, db) {
   router.put('/update', auth, controller.updateConference);
   router.put('/updatestatus', auth, controller.updateConferenceStatus);
   router.delete('/delete/:id', auth, controller.deleteConference);
-  router.get('/home', controller.getConferenceForHomePage);
+  router.get('/conference/home', controller.getConferenceForHomePage);
 
   return { router: router };
 }
