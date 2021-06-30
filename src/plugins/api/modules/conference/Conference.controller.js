@@ -5,7 +5,16 @@ import _ from 'lodash';
 export async function createConference(req, res, next) {
   if (req.user && req.body) {
     if (_.isEqual(req.user.role, 'ROLE_EDITOR')) {
-      let conference = new Conference(req.body);
+      const conferenceData = {
+        name: req.body.name,
+        image_url: req.body.image_url,
+        description: req.body.description,
+        status: 'PENDING',
+        amount: req.body.amount,
+        createdby: req.user._id,
+        resource: req.body.resource_id
+      }
+      let conference = new Conference(conferenceData);
       await conference.save()
       .then(data => {
         response.sendRespond(res, data);
