@@ -1,4 +1,5 @@
 import Workshop from './Workshop.model';
+import Resource from '../resource/Resource.model';
 import response from '../../../../lib/response.handler';
 import _ from 'lodash';
 import User from '../user/User.model.js'
@@ -17,7 +18,8 @@ export async function createWorkshop(req, res, next) {
     }
     let workshop = new Workshop(workhopDetails);
     await workshop.save()
-    .then(() => {
+    .then(async () => {
+      await Resource.findByIdAndUpdate(req.body.resource, { isedited: true });
       response.sendRespond(res, workshop);
       next();
     })

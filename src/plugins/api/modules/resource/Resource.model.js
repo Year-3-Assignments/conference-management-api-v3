@@ -13,6 +13,7 @@ const ResourceSchema = new Schema({
   resourceurls: [{ type: String, required: true, trim: true }],
   ispaid: { type: Boolean, required: false, default: false },
   resourcepersons: [{ type: Schema.Types.ObjectId, required: true, ref: 'users' }],
+  isedited: { type: Boolean, required: false, default: false }
 }, {
   timestamps: true
 });

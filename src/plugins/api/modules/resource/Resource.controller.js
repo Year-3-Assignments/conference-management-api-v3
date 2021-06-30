@@ -38,7 +38,7 @@ export async function getUserResorces(req, res, next) {
 }
 
 export async function getResourcesForEditor(req, res, next) {
-  await Resource.find({ ispaid: true })
+  await Resource.find({ ispaid: true, isedited: false })
   .populate('createdby', '_id firstname lastname email username phonenumber imageurl description')
   .populate('resourcepersons', '_id firstname lastname email username phonenumber imageurl description')
   .then((data) => {

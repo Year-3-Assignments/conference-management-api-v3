@@ -1,4 +1,5 @@
 import Conference from './Conference.model';
+import Resource from '../resource/Resource.model';
 import response from '../../../../lib/response.handler';
 import _ from 'lodash';
 
@@ -16,7 +17,8 @@ export async function createConference(req, res, next) {
       }
       let conference = new Conference(conferenceData);
       await conference.save()
-      .then(data => {
+      .then(async data => {
+        await Resource.findByIdAndUpdate(req.body.resource_id, { isedited: true });
         response.sendRespond(res, data);
         next();
       })
