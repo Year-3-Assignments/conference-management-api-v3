@@ -8,7 +8,7 @@ const ConferenceSchema = new Schema({
   status: { type: String, required: true, trim: true },
   createdby: { type: Schema.Types.ObjectId, required: true, ref: 'users' },
   atendees: [{ type: Schema.Types.ObjectId, ref: 'users' }],
-  resource: { type: Schema.Types.ObjectId, ref: 'resources'},
+  resource: { type: Schema.Types.ObjectId, ref: 'resources', required: true },
 }, {
   timestamps: true
 });
