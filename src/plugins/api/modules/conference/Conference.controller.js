@@ -10,6 +10,7 @@ export async function createConference(req, res, next) {
         image_url: req.body.image_url,
         description: req.body.description,
         status: 'PENDING',
+        amount: req.body.amount,
         createdby: req.user._id,
         resource: req.body.resource_id
       }

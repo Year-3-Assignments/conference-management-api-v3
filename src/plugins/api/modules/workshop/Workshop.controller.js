@@ -12,6 +12,7 @@ export async function createWorkshop(req, res, next) {
       description: req.body.description,
       image_url: req.body.imageurl,
       createdby: req.user._id,
+      amount: req.body.amount,
       resource: req.body.resource
     }
     let workshop = new Workshop(workhopDetails);
@@ -65,7 +66,7 @@ export async function deleteWorkshop(req, res, next) {
 
 export async function getWorkshopsForAdmin(req, res, next) {
   if (req.user && _.isEqual(req.user.role, enums.ROLE_ADMIN)) {
-    await Workshop.find({ isapproved: false })
+    await Workshop.find({})
     .populate('attendees', '_id firstname lastname description imageurl email phonenumber')
     .populate('createdby', '_id firstname lastname description imageurl email phonenumber')
     .populate({ 
